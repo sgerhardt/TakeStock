@@ -21,7 +21,6 @@ def get_earnings_date(ticker=''):
     request = requests.get(earnings_url)
     soup = bs4.BeautifulSoup(request.text)
     tag = soup.find(text=re.compile('Earnings announcement*'))
-    # print(ticker + ' ' + tag.string)
     return tag[tag.index(':') + 1:].strip()
 
 

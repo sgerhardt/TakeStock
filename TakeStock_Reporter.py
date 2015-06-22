@@ -68,7 +68,7 @@ def usage():
             \n\n
             Examples:
             TakeStock.py -e sender_email@your_domain.com -p sender_password -r email_recipient@recipient_domain.com -s smtp.gmail.com -p 587 -t 'AAPL,MSFT,AMT' -v
-            TakeStock.py -v
+            TakeStock.py -v -t 'AAPL,AMZN,MSFT,AMT'
             """)
     sys.exit(0)
 

@@ -5,7 +5,7 @@ import bs4
 
 
 def main():
-    quote_request(ticker='aapl')
+    quote_request(ticker='')
 
 
 def quote_request(wsdl='http://www.webservicex.net/stockquote.asmx?WSDL', ticker=''):
