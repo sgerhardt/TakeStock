@@ -18,6 +18,9 @@ def main():
     global port
     global verbose
 
+    tickers = None
+    verbose = False
+
     if not len(sys.argv[1:]):
         usage()
 
@@ -78,18 +81,6 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
     Given a list of stock tickers, this will send an email report formatted as an HTML table to the designated address.
     """
 
-    # Create a message summarizing the best deals.
-    message = MIMEMultipart('alternative')
-
-    message['Subject'] = 'TakeStock Report'
-    message['From'] = email_sender
-
-    html = """\
-      <table border=1>
-      <thead><tr><td>Stock Symbol</td><td>Earnings Date</td><td>Price</td></tr></thead>
-      <tbody>
-    """
-
     stocks = QuarterlyReport.get_stocks(tickers)
 
     if verbose:
@@ -97,22 +88,34 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
         for stock in stocks:
             print(stock.ticker + ' ' + stock.earnings_date + ' ' + str(stock.price))
 
-    for stock in stocks:
-        html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + "<td>" + \
-                str(stock.price) + "</td>"
+    if ('email_sender' and 'email_cred' and 'email_receiver' and 'port' and 'smtp') in globals():
+        # Create a message summarizing the best deals.
+        message = MIMEMultipart('alternative')
 
-    html += '</tbody></table>'
+        message['Subject'] = 'TakeStock Report'
+        message['From'] = email_sender
+        html = """\
+        <table border=1>
+        <thead><tr><td>Stock Symbol</td><td>Earnings Date</td><td>Price</td></tr></thead>
+        <tbody>
+        """
 
-    text = MIMEText(html, 'html')
-    message.attach(text)
-    # Email the deals.
-    message['To'] = email_receiver
-    server = smtplib.SMTP(smtp + ":" + port)
-    # server.ehlo()
-    server.starttls()
-    server.login(email_sender, email_cred)
-    server.sendmail(email_sender, email_receiver, message.as_string())
-    server.quit()
+        for stock in stocks:
+            html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + "<td>" + \
+                    str(stock.price) + "</td>"
+
+        html += '</tbody></table>'
+
+        text = MIMEText(html, 'html')
+        message.attach(text)
+        # Email the deals.
+        message['To'] = email_receiver
+        server = smtplib.SMTP(smtp + ":" + port)
+        # server.ehlo()
+        server.starttls()
+        server.login(email_sender, email_cred)
+        server.sendmail(email_sender, email_receiver, message.as_string())
+        server.quit()
 
 
 if __name__ == "__main__":
