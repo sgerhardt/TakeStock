@@ -19,7 +19,7 @@ def get_earnings_date(ticker=''):
     """
     earnings_url = 'http://www.nasdaq.com/earnings/report/' + ticker.lower()
     request = requests.get(earnings_url)
-    soup = bs4.BeautifulSoup(request.text)
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
     tag = soup.find(text=re.compile('Earnings announcement*'))
     return tag[tag.index(':') + 1:].strip()
 

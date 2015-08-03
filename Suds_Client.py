@@ -16,7 +16,7 @@ def quote_request(wsdl='http://www.webservicex.net/stockquote.asmx?WSDL', ticker
 
     result = client.service.GetQuote(request_data)
 
-    soup = bs4.BeautifulSoup(result)
+    soup = bs4.BeautifulSoup(result, 'html.parser')
 
     return soup.last.text
 
