@@ -17,18 +17,25 @@ def main():
     global smtp
     global port
     global verbose
+    global peg_ratio
 
+    email_sender = None
+    email_receiver = None
+    email_cred = None
+    smtp = None
+    port = None
     tickers = None
     verbose = False
+    peg_ratio = False
 
     if not len(sys.argv[1:]):
         usage()
 
     # Read the commandline options
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:v", ['help', 'email_sender=', 'email_receiver=',
-                                                                    'password=', 'tickers=' 'smtp=', 'port=',
-                                                                    'verbose'])
+        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vg", ['help', 'email_sender=', 'email_receiver=',
+                                                                      'password=', 'tickers=' 'smtp=', 'port=',
+                                                                      'verbose', 'growth'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -50,12 +57,18 @@ def main():
             port = a
         elif o in ('-v', '--verbose'):
             verbose = True
+        elif o in ('-g', '--peg_ratio'):
+            peg_ratio = True
         else:
             assert False, "Unhandled Option"
 
+    if verbose:
+        print_results(tickers=tickers.replace("'", '').split(','))
     # Send an email report for the stocks listed in the tickers list.
-    send_email(tickers=tickers.replace("'", '').split(','),
-               to_addr='your_email_here@your_domain.com')
+
+    if email_receiver is not None:
+        send_email(tickers=tickers.replace("'", '').split(','),
+                   to_addr='your_email_here@your_domain.com')
 
 
 def usage():
@@ -67,13 +80,34 @@ def usage():
             -p --password           - password for email_address
             -s --smtp               - smtp server that sends the email report
             -t --port               - port for the smtp server
-            -v --verbose            - print results to cmd line
+            -v --verbose            - print earnings date and price to terminal
+            -g --peg_ratio          - print peg ratio to terminal
             \n\n
             Examples:
             TakeStock.py -e sender_email@your_domain.com -p sender_password -r email_recipient@recipient_domain.com -s smtp.gmail.com -p 587 -t 'AAPL,MSFT,AMT' -v
-            TakeStock.py -v -t 'AAPL,AMZN,MSFT,AMT'
+            TakeStock.py -v -g -t 'AAPL,AMZN,MSFT,AMT'
             """)
     sys.exit(0)
+
+
+def print_results(tickers=None):
+    """
+    Given a list of stock tickers, this print formatted results to the terminal.
+    """
+    stocks = QuarterlyReport.get_stocks(tickers)
+
+    if verbose:
+        if peg_ratio:
+            print('Ticker    Earnings Date    Peg Ratio    Price')
+            for stock in stocks:
+                print('{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date) +
+                      '{:<13}'.format(str(stock.peg_ratio)) + '{:<12}'.format(str(stock.price)))
+
+        else:
+            print('Ticker    Earnings Date    Price')
+            for stock in stocks:
+                print('{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date) +
+                      '{:<12}'.format(str(stock.price)))
 
 
 def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
@@ -83,26 +117,34 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
 
     stocks = QuarterlyReport.get_stocks(tickers)
 
-    if verbose:
-        print('Ticker   Earnings Date   Price')
-        for stock in stocks:
-            print(stock.ticker + ' ' + stock.earnings_date + ' ' + str(stock.price))
-
     if ('email_sender' and 'email_cred' and 'email_receiver' and 'port' and 'smtp') in globals():
         # Create a message summarizing the best deals.
         message = MIMEMultipart('alternative')
 
         message['Subject'] = 'TakeStock Report'
         message['From'] = email_sender
-        html = """\
-        <table border=1>
-        <thead><tr><td>Stock Symbol</td><td>Earnings Date</td><td>Price</td></tr></thead>
-        <tbody>
-        """
+        html = ''
+        if peg_ratio:
+            html = """\
+            <table border=1>
+            <thead><tr><td>Stock Symbol</td><td>Earnings Date</td><td>PEG Ratio</td><td>Price</td></tr></thead>
+            <tbody>
+            """
+        else:
+            html = """\
+            <table border=1>
+            <thead><tr><td>Stock Symbol</td><td>Earnings Date</td><td>Price</td></tr></thead>
+            <tbody>
+            """
 
         for stock in stocks:
-            html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + "<td>" + \
-                    str(stock.price) + "</td>"
+            if peg_ratio:
+                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + \
+                        "<td>" + str(stock.peg_ratio) + "</td>" + "<td>" + str(stock.price) + "</td>"
+            else:
+                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + "<td>" + \
+                        str(stock.price) + "</td>"
+
 
         html += '</tbody></table>'
 

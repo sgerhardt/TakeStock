@@ -24,6 +24,19 @@ def get_earnings_date(ticker=''):
     return tag[tag.index(':') + 1:].strip()
 
 
+def get_peg_ratio(ticker=''):
+    """
+    This function gets the PEG ratio for the given ticker symbol. It performs a request to the
+    Yahoo url and parses the response to find the PEG ratio.
+    :param ticker: The stock symbol/ticker to use for the lookup
+    :return: String containing the PEG ratio
+    """
+    key_stats_url = 'http://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+    request = requests.get(key_stats_url)
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    return soup.find(text=re.compile('PEG Ratio')).findNext('td').text
+
+
 def get_stocks(tickers=None):
     """
     This function creates a list of Stock objects.
@@ -32,7 +45,7 @@ def get_stocks(tickers=None):
     for ticker in tickers:
         stocks.append(
             Stock(price=Suds_Client.quote_request(ticker=ticker), earnings_date=get_earnings_date(ticker=ticker),
-                  ticker=ticker))
+                  ticker=ticker, peg_ratio=get_peg_ratio(ticker)))
     return stocks
 
 
@@ -40,10 +53,11 @@ class Stock:
     """
     Defines a stock.
     """
-    def __init__(self, price=0, earnings_date='', ticker=''):
+    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio=''):
         self.price = price
         self.earnings_date = earnings_date
         self.ticker = ticker
+        self.peg_ratio = peg_ratio
 
 
 if __name__ == "__main__":
