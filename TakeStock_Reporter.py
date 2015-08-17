@@ -139,11 +139,11 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
 
         for stock in stocks:
             if peg_ratio:
-                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + \
-                        "<td>" + str(stock.peg_ratio) + "</td>" + "<td>" + str(stock.price) + "</td>"
+                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "</td>" + \
+                        "<td>" + str(stock.peg_ratio) + "</td>" + "<td>" + str(stock.price) + "</td></tr>"
             else:
-                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "<td/>" + "<td>" + \
-                        str(stock.price) + "</td>"
+                html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "</td>" + "<td>" + \
+                        str(stock.price) + "</td></tr>"
 
 
         html += '</tbody></table>'
