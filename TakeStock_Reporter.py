@@ -18,6 +18,7 @@ def main():
     global port
     global verbose
     global peg_ratio
+    global rsi
 
     email_sender = None
     email_receiver = None
@@ -27,15 +28,16 @@ def main():
     tickers = None
     verbose = False
     peg_ratio = False
+    rsi = False
 
     if not len(sys.argv[1:]):
         usage()
 
     # Read the commandline options
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vg", ['help', 'email_sender=', 'email_receiver=',
+        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vgi", ['help', 'email_sender=', 'email_receiver=',
                                                                       'password=', 'tickers=' 'smtp=', 'port=',
-                                                                      'verbose', 'growth'])
+                                                                      'verbose', 'growth', 'rsi'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -59,6 +61,8 @@ def main():
             verbose = True
         elif o in ('-g', '--peg_ratio'):
             peg_ratio = True
+        elif o in ('-i', '--rsi'):
+            rsi = True
         else:
             assert False, "Unhandled Option"
 
@@ -80,8 +84,9 @@ def usage():
             -p --password           - password for email_address
             -s --smtp               - smtp server that sends the email report
             -t --port               - port for the smtp server
-            -v --verbose            - print earnings date and price to terminal
-            -g --peg_ratio          - print peg ratio to terminal
+            -v --verbose            - print earnings date and price
+            -g --peg_ratio          - print peg ratio
+            -r --rsi                - print relative strength indicator
             \n\n
             Examples:
             TakeStock.py -e sender_email@your_domain.com -p sender_password -r email_recipient@recipient_domain.com -s smtp.gmail.com -p 587 -t 'AAPL,MSFT,AMT' -v
@@ -97,17 +102,25 @@ def print_results(tickers=None):
     stocks = QuarterlyReport.get_stocks(tickers)
 
     if verbose:
+        string_header = 'Ticker    Earnings Date    '
+        string_to_line = ''
         if peg_ratio:
-            print('Ticker    Earnings Date    Peg Ratio    Price')
-            for stock in stocks:
-                print('{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date) +
-                      '{:<13}'.format(str(stock.peg_ratio)) + '{:<12}'.format(str(stock.price)))
-
-        else:
-            print('Ticker    Earnings Date    Price')
-            for stock in stocks:
-                print('{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date) +
-                      '{:<12}'.format(str(stock.price)))
+            string_header += 'Peg Ratio    '
+        if rsi:
+            string_header += 'RSI          '
+        string_header += 'Price'
+        print(string_header)
+        for stock in stocks:
+            string_to_line = '{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date)
+            if peg_ratio:
+                string_to_line += '{:<13}'.format(str(stock.peg_ratio))
+            if rsi:
+                string_to_line += '{:<13}'.format(str(stock.rsi))
+            string_to_line += '{:<12}'.format(str(stock.price))
+            print(string_to_line)
+            # print('{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date) +
+            #         '{:<13}'.format(str(stock.peg_ratio)) + '{:<13}'.format(str(stock.rsi)) +
+            #         '{:<12}'.format(str(stock.price)))
 
 
 def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):

@@ -37,6 +37,20 @@ def get_peg_ratio(ticker=''):
     return soup.find(text=re.compile('PEG Ratio')).findNext('td').text
 
 
+def get_rsi(ticker=''):
+    """
+    This function gets the rsi for the given ticker symbol. It performs a request to the
+    nasdaq url and parses the response to find the rsi.
+    :param ticker: The stock symbol/ticker to use for the lookup
+    :return: String containing the rsi
+    """
+    rsi_url = 'http://charting.nasdaq.com/ext/charts.dll?2-1-14-0-0-512-03NA000000' + ticker.upper() \
+              + '-&SF:1|27-SH:27=10-BG=FFFFFF-BT=0-WD=635-HT=395--XTBL-'
+    request = requests.get(rsi_url)
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    return soup.find_all('td', class_="DrillDownData")[1].text
+
+
 def get_stocks(tickers=None):
     """
     This function creates a list of Stock objects.
@@ -45,7 +59,7 @@ def get_stocks(tickers=None):
     for ticker in tickers:
         stocks.append(
             Stock(price=Suds_Client.quote_request(ticker=ticker), earnings_date=get_earnings_date(ticker=ticker),
-                  ticker=ticker, peg_ratio=get_peg_ratio(ticker)))
+                  ticker=ticker, peg_ratio=get_peg_ratio(ticker), rsi=get_rsi(ticker=ticker)))
     return stocks
 
 
@@ -53,11 +67,12 @@ class Stock:
     """
     Defines a stock.
     """
-    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio=''):
+    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio='', rsi=''):
         self.price = price
         self.earnings_date = earnings_date
         self.ticker = ticker
         self.peg_ratio = peg_ratio
+        self.rsi = rsi
 
 
 if __name__ == "__main__":
