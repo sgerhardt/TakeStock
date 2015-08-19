@@ -5,6 +5,6 @@ It scrapes the NASDAQ site for earnings dates and gets stock prices using a web 
 
 TakeStock_Reporter.py is the main script. Run this script to see all the commands.
 
-This project has suds-jurko and BeautifulSoup4 as requirments.
+This project has suds-jurko and BeautifulSoup4 as requirements.
 
 ![Alt text](/screenshot.png?raw=true "TakeStock in action")
