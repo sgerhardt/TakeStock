@@ -24,6 +24,22 @@ def get_earnings_date(ticker=''):
     return tag[tag.index(':') + 1:].strip()
 
 
+def get_fifty_two_week_high_low(ticker=''):
+    """
+    This function gets the fifty-two week high and lows for the given ticker symbol. It performs a request to the
+    http://www.barchart.com/ url and parses the response to find the fifty-two week high and low.
+    :param ticker: The stock symbol/ticker to use for the lookup
+    :return: String containing the fifty two week high and low
+    """
+    earnings_url = 'http://www.barchart.com/quotes/stocks/' + ticker.upper()
+    request = requests.get(earnings_url)
+    soup = bs4.BeautifulSoup(request.text, 'html.parser')
+    found_value = soup.find(text=re.compile('52Wk'))
+    high_text = found_value.findPrevious('td').text.strip()
+    low_text = found_value.findNext('td').text.strip()
+    return high_text[0:high_text.index('\t')]+'H ' + low_text[0:low_text.index('\t')]+'L'
+
+
 def get_peg_ratio(ticker=''):
     """
     This function gets the PEG ratio for the given ticker symbol. It performs a request to the
@@ -59,7 +75,8 @@ def get_stocks(tickers=None):
     for ticker in tickers:
         stocks.append(
             Stock(price=Suds_Client.quote_request(ticker=ticker), earnings_date=get_earnings_date(ticker=ticker),
-                  ticker=ticker, peg_ratio=get_peg_ratio(ticker), rsi=get_rsi(ticker=ticker)))
+                  ticker=ticker, peg_ratio=get_peg_ratio(ticker), rsi=get_rsi(ticker=ticker),
+                  fifty_two=get_fifty_two_week_high_low(ticker=ticker)))
     return stocks
 
 
@@ -67,13 +84,13 @@ class Stock:
     """
     Defines a stock.
     """
-    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio='', rsi=''):
+    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio='', rsi='', fifty_two=''):
         self.price = price
         self.earnings_date = earnings_date
         self.ticker = ticker
         self.peg_ratio = peg_ratio
         self.rsi = rsi
-
+        self.fifty_two = fifty_two
 
 if __name__ == "__main__":
     # If the script is being invoked directly, run the main method.
