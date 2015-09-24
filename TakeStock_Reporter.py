@@ -38,8 +38,8 @@ def main():
     # Read the commandline options
     try:
         opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vgif", ['help', 'email_sender=', 'email_receiver=',
-                                                                      'password=', 'tickers=' 'smtp=', 'port=',
-                                                                      'verbose', 'growth', 'rsi', 'fifty_two'])
+                                                                       'password=', 'tickers=' 'smtp=', 'port=',
+                                                                       'verbose', 'growth', 'rsi', 'fifty_two'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -71,7 +71,7 @@ def main():
             assert False, "Unhandled Option"
 
     if verbose:
-        print_results(tickers=tickers.replace("'", '').split(','))
+        get_results(tickers=tickers.replace("'", '').split(','))
     # Send an email report for the stocks listed in the tickers list.
 
     if email_receiver is not None:
@@ -100,10 +100,13 @@ def usage():
     sys.exit(0)
 
 
-def print_results(tickers=None):
+def get_results(tickers=None):
     """
     Given a list of stock tickers, this print formatted results to the terminal.
     """
+    if tickers == ['']:
+        return
+
     stocks = QuarterlyReport.get_stocks(tickers)
 
     if verbose:
@@ -127,6 +130,7 @@ def print_results(tickers=None):
                 string_to_line += '{:<20}'.format(str(stock.fifty_two))
             string_to_line += '{:<12}'.format(str(stock.price))
             print(string_to_line)
+    return stocks
 
 
 def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
@@ -164,7 +168,6 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
                 html += "<tr>" + "<td>" + stock.ticker + "</td>" + "<td>" + stock.earnings_date + "</td>" + "<td>" + \
                         str(stock.price) + "</td></tr>"
 
-
         html += '</tbody></table>'
 
         text = MIMEText(html, 'html')
@@ -182,3 +185,9 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
 if __name__ == "__main__":
     # If the script is being invoked directly, run the main method.
     main()
+else:
+    # Running from GUI or other context
+    verbose = True
+    rsi = True
+    peg_ratio = True
+    fifty_two = True
