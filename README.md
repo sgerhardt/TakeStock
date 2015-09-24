@@ -17,5 +17,5 @@ If run as CLI, TakeStock_Reporter.py is the main script. Run this script to see 
 
 This project has suds-jurko and BeautifulSoup4 as requirements.
 
-![Alt text](/gui_screenshot.png?raw=true "TakeStock in GUI action")
+![Alt text](/screenshot_gui.png?raw=true "TakeStock in GUI action")
 ![Alt text](/screenshot.png?raw=true "TakeStock in CLI action")
