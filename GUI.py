@@ -9,7 +9,6 @@ import TakeStock_Reporter
 class MyForm(QtGui.QWidget):
     def __init__(self):
         super(MyForm, self).__init__()
-
         self.ticker_entry = QtGui.QLineEdit()
 
         self.search_tickers = QtGui.QPushButton('Search Tickers')
@@ -27,7 +26,7 @@ class MyForm(QtGui.QWidget):
         self.setLayout(mainLayout)
 
         self.setGeometry(300, 300, 800, 300)
-        self.setWindowTitle('My Form')
+        self.setWindowTitle('TakeStock')
         self.show()
 
     def search_tickers_clicked(self):
