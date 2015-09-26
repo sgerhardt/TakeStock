@@ -7,7 +7,7 @@ It gets 52 week highs and lows from http://www.barchart.com/.
 
 It gets peg ratios from http://finance.yahoo.com.
 
-It gets RSIs from http://charting.nasdaq.com.
+It gets RSIs and earnings dates from http://www.nasdaq.com/.
 
 This project may be run as either a CLI or GUI app.
 
