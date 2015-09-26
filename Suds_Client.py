@@ -9,16 +9,19 @@ def main():
 
 
 def quote_request(wsdl='http://www.webservicex.net/stockquote.asmx?WSDL', ticker=''):
-    client = Client(wsdl)
+    try:
+        client = Client(wsdl)
 
-    request_data = client.factory.create('GetQuote')
-    request_data.symbol = ticker
+        request_data = client.factory.create('GetQuote')
+        request_data.symbol = ticker
 
-    result = client.service.GetQuote(request_data)
+        result = client.service.GetQuote(request_data)
 
-    soup = bs4.BeautifulSoup(result, 'html.parser')
+        soup = bs4.BeautifulSoup(result, 'html.parser')
 
-    return soup.last.text
+        return soup.last.text
+    except:
+        return "No Data Found"
 
 if __name__ == "__main__":
     # If the script is being invoked directly, run the main method.
