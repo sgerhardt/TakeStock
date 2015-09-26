@@ -7,7 +7,7 @@ It gets 52 week highs and lows from http://www.barchart.com/.
 
 It gets peg ratios from http://finance.yahoo.com.
 
-It gets RSIs from http://charting.nasdaq.com.
+It gets RSIs and earnings dates from http://www.nasdaq.com/.
 
 This project may be run as either a CLI or GUI app.
 
@@ -17,5 +17,5 @@ If run as CLI, TakeStock_Reporter.py is the main script. Run this script to see 
 
 This project has suds-jurko and BeautifulSoup4 as requirements.
 
-![Alt text](/gui_screenshot.png?raw=true "TakeStock in GUI action")
+![Alt text](/screenshot_gui.png?raw=true "TakeStock in GUI action")
 ![Alt text](/screenshot.png?raw=true "TakeStock in CLI action")
