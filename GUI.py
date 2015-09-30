@@ -1,7 +1,9 @@
 __author__ = 'Sean Gerhardt'
 
 import sys
+
 from PyQt4 import QtGui
+from PyQt4 import QtCore
 
 import TakeStock_Reporter
 
@@ -12,7 +14,7 @@ class MyForm(QtGui.QWidget):
         self.ticker_entry = QtGui.QLineEdit()
 
         self.search_tickers = QtGui.QPushButton('Search Tickers')
-        self.search_tickers.clicked.connect(self.search_tickers_clicked)
+        #self.search_tickers.clicked.connect(self.search_tickers_clicked)
 
         self.results_table = QtGui.QTableWidget()
         self.results_table.setColumnCount(6)
@@ -25,36 +27,73 @@ class MyForm(QtGui.QWidget):
         mainLayout.addRow('Results:', self.results_table)
         self.setLayout(mainLayout)
 
+        self.thread = Worker()
+        self.connect(self.thread, QtCore.SIGNAL("finished()"), self.updateUi)
+        self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.updateUi)
+        self.connect(self.thread, QtCore.SIGNAL("output()"), self.test)
+        self.connect(self.search_tickers, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
+
         self.setGeometry(300, 300, 800, 300)
         self.setWindowTitle('TakeStock')
         self.show()
 
-    def search_tickers_clicked(self):
-        self.results = TakeStock_Reporter.get_results(tickers=self.ticker_entry.text().replace(" ", '').split(','))
-        if self.results == None:
-            return
-        self.results_table.setRowCount(len(self.results))
-        self.results_table.setColumnCount(len(self.results[0].__dict__))
+    def test(self):
+        print('test')
 
-        for row_index, row in enumerate(self.results):
+    def search_tickers_clicked(self):
+        self.search_tickers.setEnabled(False)
+        self.thread.start_thread(gui=self)
+        #self.connect(self.thread, QtCore.SIGNAL("output(QRect, QImage)"), self.addImage)
+        #self.connect(self.startButton, QtCore.SIGNAL("clicked()"), self.makePicture)
+
+    def updateUi(self):
+        self.search_tickers.setEnabled(True)
+
+
+class Worker(QtCore.QThread):
+    def __init__(self, parent=None):
+
+        QtCore.QThread.__init__(self, parent)
+        self.exiting = False
+
+    def __del__(self):
+        self.exiting = True
+        self.wait()
+
+    def start_thread(self, gui):
+        #pass
+        self.gui = gui
+        self.start()
+
+    def run(self):
+        # Note: This is never called directly. It is called by Qt once the
+        # thread environment has been set up.
+        self.gui.results = TakeStock_Reporter.get_results(tickers=self.gui.ticker_entry.text().replace(" ", '').split(','))
+        if self.gui.results == None:
+            return
+        self.gui.results_table.setRowCount(len(self.gui.results))
+        self.gui.results_table.setColumnCount(len(self.gui.results[0].__dict__))
+
+        for row_index, row in enumerate(self.gui.results):
             for col_index in range(len(row.__dict__)):
-                if self.header_names[col_index] == 'Ticker':
+                if self.gui.header_names[col_index] == 'Ticker':
                     item = QtGui.QTableWidgetItem(row.ticker)
-                elif self.header_names[col_index] == 'Price':
+                elif self.gui.header_names[col_index] == 'Price':
                     item = QtGui.QTableWidgetItem(row.price)
-                elif self.header_names[col_index] == 'PEG Ratio':
+                elif self.gui.header_names[col_index] == 'PEG Ratio':
                     item = QtGui.QTableWidgetItem(row.peg_ratio)
-                elif self.header_names[col_index] == 'PEG Ratio':
+                elif self.gui.header_names[col_index] == 'PEG Ratio':
                     item = QtGui.QTableWidgetItem(row.peg_ratio)
-                elif self.header_names[col_index] == 'RSI':
+                elif self.gui.header_names[col_index] == 'RSI':
                     item = QtGui.QTableWidgetItem(row.rsi)
-                elif self.header_names[col_index] == '52 Wk Hi-Low':
+                elif self.gui.header_names[col_index] == '52 Wk Hi-Low':
                     item = QtGui.QTableWidgetItem(row.fifty_two)
-                elif self.header_names[col_index] == 'Earnings Date':
+                elif self.gui.header_names[col_index] == 'Earnings Date':
                     item = QtGui.QTableWidgetItem(row.earnings_date)
                 else:
                     item = QtGui.QTableWidgetItem('No Data Found')
-                self.results_table.setItem(row_index, col_index, item)
+                self.gui.results_table.setItem(row_index, col_index, item)
+
 
 app = QtGui.QApplication(sys.argv)
 mainWindow = MyForm()
