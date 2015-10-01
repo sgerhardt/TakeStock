@@ -11,20 +11,23 @@ import TakeStock_Reporter
 class MyForm(QtGui.QWidget):
     def __init__(self):
         super(MyForm, self).__init__()
+
+        self.ticker_label = QtGui.QLabel('Ticker Entry')
         self.ticker_entry = QtGui.QLineEdit()
+        hbox = QtGui.QHBoxLayout()
+        hbox.addWidget(self.ticker_label)
+        hbox.addWidget(self.ticker_entry)
 
         self.search_tickers = QtGui.QPushButton('Search Tickers')
-        #self.search_tickers.clicked.connect(self.search_tickers_clicked)
-
         self.results_table = QtGui.QTableWidget()
         self.results_table.setColumnCount(6)
         self.header_names = ['Ticker', 'Price', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
         self.results_table.setHorizontalHeaderLabels(self.header_names)
 
-        mainLayout = QtGui.QFormLayout()
-        mainLayout.addRow('Ticker:', self.ticker_entry)
-        mainLayout.addRow(self.search_tickers)
-        mainLayout.addRow('Results:', self.results_table)
+        mainLayout = QtGui.QVBoxLayout()
+        mainLayout.addLayout(hbox)
+        mainLayout.addWidget(self.search_tickers)
+        mainLayout.addWidget(self.results_table)
         self.setLayout(mainLayout)
 
         self.thread = Worker()
@@ -43,8 +46,6 @@ class MyForm(QtGui.QWidget):
     def search_tickers_clicked(self):
         self.search_tickers.setEnabled(False)
         self.thread.start_thread(gui=self)
-        #self.connect(self.thread, QtCore.SIGNAL("output(QRect, QImage)"), self.addImage)
-        #self.connect(self.startButton, QtCore.SIGNAL("clicked()"), self.makePicture)
 
     def updateUi(self):
         self.search_tickers.setEnabled(True)
@@ -61,7 +62,6 @@ class Worker(QtCore.QThread):
         self.wait()
 
     def start_thread(self, gui):
-        #pass
         self.gui = gui
         self.start()
 
