@@ -1,5 +1,7 @@
 __author__ = 'Sean Gerhardt'
 
+import datetime
+import calendar
 import requests
 import bs4
 import re
@@ -26,6 +28,7 @@ def get_earnings_date(ticker=''):
     except:
         return 'No Data Found'
 
+
 def get_fifty_two_week_high_low(ticker=''):
     """
     This function gets the fifty-two week high and lows for the given ticker symbol. It performs a request to the
@@ -40,7 +43,7 @@ def get_fifty_two_week_high_low(ticker=''):
         found_value = soup.find(text=re.compile('52Wk'))
         high_text = found_value.findPrevious('td').text.strip()
         low_text = found_value.findNext('td').text.strip()
-        return high_text[0:high_text.index('\t')]+'H ' + low_text[0:low_text.index('\t')]+'L'
+        return high_text[0:high_text.index('\t')] + 'H ' + low_text[0:low_text.index('\t')] + 'L'
     except:
         return 'No Data Found'
 
@@ -95,13 +98,30 @@ class Stock:
     """
     Defines a stock.
     """
+
     def __init__(self, price=0, earnings_date='', ticker='', peg_ratio='', rsi='', fifty_two=''):
         self.price = price
         self.earnings_date = earnings_date
+        self.earnings_soon = False
+        if self.earnings_date:
+            month_index = 0
+            for idx, month in enumerate(calendar.month_name):
+                if month.startswith(self.earnings_date[0:3]):
+                    month_index = idx
+                    break
+            earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 4:]),
+                                          month=month_index,
+                                          day=int(self.earnings_date[
+                                                  self.earnings_date.index(',') - 2:self.earnings_date.index(
+                                                      ',')].strip()))
+            if 0 <= abs((earnings_date - datetime.date.today()).days) <= 7:
+                self.earnings_soon = True
+
         self.ticker = ticker
         self.peg_ratio = peg_ratio
         self.rsi = rsi
         self.fifty_two = fifty_two
+
 
 if __name__ == "__main__":
     # If the script is being invoked directly, run the main method.

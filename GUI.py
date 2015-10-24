@@ -1,6 +1,7 @@
 __author__ = 'Sean Gerhardt'
 
 import sys
+import datetime
 
 from PyQt4 import QtGui
 from PyQt4 import QtCore
@@ -23,6 +24,7 @@ class MyForm(QtGui.QWidget):
         self.results_table.setColumnCount(6)
         self.header_names = ['Ticker', 'Price', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
         self.results_table.setHorizontalHeaderLabels(self.header_names)
+        self.results_table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addLayout(hbox)
@@ -33,15 +35,11 @@ class MyForm(QtGui.QWidget):
         self.thread = Worker()
         self.connect(self.thread, QtCore.SIGNAL("finished()"), self.updateUi)
         self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.updateUi)
-        self.connect(self.thread, QtCore.SIGNAL("output()"), self.test)
         self.connect(self.search_tickers, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
 
         self.setGeometry(300, 300, 800, 300)
-        self.setWindowTitle('TakeStock')
+        self.setWindowTitle('TakeStock    ' + datetime.date.today().strftime("%b %d, %Y"))
         self.show()
-
-    def test(self):
-        print('test')
 
     def search_tickers_clicked(self):
         self.search_tickers.setEnabled(False)
@@ -68,14 +66,15 @@ class Worker(QtCore.QThread):
     def run(self):
         # Note: This is never called directly. It is called by Qt once the
         # thread environment has been set up.
-        self.gui.results = TakeStock_Reporter.get_results(tickers=self.gui.ticker_entry.text().replace(" ", '').split(','))
-        if self.gui.results == None:
+        self.gui.results = TakeStock_Reporter.get_results(
+            tickers=self.gui.ticker_entry.text().replace(" ", '').split(','))
+        if self.gui.results is None:
             return
         self.gui.results_table.setRowCount(len(self.gui.results))
-        self.gui.results_table.setColumnCount(len(self.gui.results[0].__dict__))
+        self.gui.results_table.setColumnCount(len(self.gui.results[0].__dict__) - 1)
 
         for row_index, row in enumerate(self.gui.results):
-            for col_index in range(len(row.__dict__)):
+            for col_index in range(len(row.__dict__) - 1):
                 if self.gui.header_names[col_index] == 'Ticker':
                     item = QtGui.QTableWidgetItem(row.ticker)
                 elif self.gui.header_names[col_index] == 'Price':
@@ -90,6 +89,11 @@ class Worker(QtCore.QThread):
                     item = QtGui.QTableWidgetItem(row.fifty_two)
                 elif self.gui.header_names[col_index] == 'Earnings Date':
                     item = QtGui.QTableWidgetItem(row.earnings_date)
+                    if row.earnings_soon:
+                        font = QtGui.QFont()
+                        font.setBold(True)
+                        font.setPointSize(14)
+                        item.setFont(font)
                 else:
                     item = QtGui.QTableWidgetItem('No Data Found')
                 self.gui.results_table.setItem(row_index, col_index, item)
