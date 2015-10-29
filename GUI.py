@@ -81,10 +81,22 @@ class Worker(QtCore.QThread):
                     item = QtGui.QTableWidgetItem(row.price)
                 elif self.gui.header_names[col_index] == 'PEG Ratio':
                     item = QtGui.QTableWidgetItem(row.peg_ratio)
-                elif self.gui.header_names[col_index] == 'PEG Ratio':
-                    item = QtGui.QTableWidgetItem(row.peg_ratio)
+                    if is_number(row.peg_ratio):
+                        if 0 < float(row.peg_ratio) <= 1:
+                            item.setTextColor(QtGui.QColor('green'))
+                        elif float(row.peg_ratio) > 1:
+                            item.setTextColor(QtGui.QColor(204, 204, 0))  # Dark Yellow
+                        elif float(row.peg_ratio) < 0:
+                            item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'RSI':
                     item = QtGui.QTableWidgetItem(row.rsi)
+                    if is_number(row.rsi):
+                        if 0 < float(row.rsi) <= 30:
+                            item.setTextColor(QtGui.QColor('green'))
+                        elif 30 < float(row.rsi) < 70:
+                            item.setTextColor(QtGui.QColor(204, 204, 0))  # Dark Yellow
+                        elif float(row.rsi) > 70:
+                            item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == '52 Wk Hi-Low':
                     item = QtGui.QTableWidgetItem(row.fifty_two)
                 elif self.gui.header_names[col_index] == 'Earnings Date':
@@ -97,6 +109,14 @@ class Worker(QtCore.QThread):
                 else:
                     item = QtGui.QTableWidgetItem('No Data Found')
                 self.gui.results_table.setItem(row_index, col_index, item)
+
+
+def is_number(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
 
 app = QtGui.QApplication(sys.argv)
