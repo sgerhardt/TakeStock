@@ -85,7 +85,7 @@ class Worker(QtCore.QThread):
                         if 0 < float(row.peg_ratio) <= 1:
                             item.setTextColor(QtGui.QColor('green'))
                         elif float(row.peg_ratio) > 1:
-                            item.setTextColor(QtGui.QColor(204, 204, 0))  # Dark Yellow
+                            item.setTextColor(QtGui.QColor('orange'))  # Dark Yellow
                         elif float(row.peg_ratio) < 0:
                             item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'RSI':
@@ -94,7 +94,7 @@ class Worker(QtCore.QThread):
                         if 0 < float(row.rsi) <= 30:
                             item.setTextColor(QtGui.QColor('green'))
                         elif 30 < float(row.rsi) < 70:
-                            item.setTextColor(QtGui.QColor(204, 204, 0))  # Dark Yellow
+                            item.setTextColor(QtGui.QColor('orange'))  # Dark Yellow
                         elif float(row.rsi) > 70:
                             item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == '52 Wk Hi-Low':
