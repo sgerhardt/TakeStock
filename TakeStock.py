@@ -35,8 +35,8 @@ class MyForm(QtGui.QWidget):
         self.setLayout(mainLayout)
 
         self.thread = Worker()
-        self.connect(self.thread, QtCore.SIGNAL("finished()"), self.updateUi)
-        self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.updateUi)
+        self.connect(self.thread, QtCore.SIGNAL("finished()"), self.update_ui)
+        self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.update_ui)
         self.connect(self.search_tickers_button, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
         self.connect(self.export_button, QtCore.SIGNAL("clicked()"), self.export_clicked)
 
@@ -57,13 +57,14 @@ class MyForm(QtGui.QWidget):
                 csv_writer.writerow(row_result)
                 row_result = []
 
-
     def search_tickers_clicked(self):
         self.search_tickers_button.setEnabled(False)
+        self.setCursor(QtCore.Qt.BusyCursor)
         self.thread.start_thread(gui=self)
 
-    def updateUi(self):
+    def update_ui(self):
         self.search_tickers_button.setEnabled(True)
+        self.unsetCursor()
 
 
 class Worker(QtCore.QThread):
