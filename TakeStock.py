@@ -19,34 +19,51 @@ class MyForm(QtGui.QWidget):
         hbox.addWidget(self.ticker_label)
         hbox.addWidget(self.ticker_entry)
 
-        self.search_tickers = QtGui.QPushButton('Search Tickers')
+        self.search_tickers_button = QtGui.QPushButton('Search Tickers')
         self.results_table = QtGui.QTableWidget()
         self.results_table.setColumnCount(6)
         self.header_names = ['Ticker', 'Price', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
         self.results_table.setHorizontalHeaderLabels(self.header_names)
         self.results_table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+        self.export_button = QtGui.QPushButton('Export')
 
         mainLayout = QtGui.QVBoxLayout()
         mainLayout.addLayout(hbox)
-        mainLayout.addWidget(self.search_tickers)
+        mainLayout.addWidget(self.search_tickers_button)
         mainLayout.addWidget(self.results_table)
+        mainLayout.addWidget(self.export_button)
         self.setLayout(mainLayout)
 
         self.thread = Worker()
         self.connect(self.thread, QtCore.SIGNAL("finished()"), self.updateUi)
         self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.updateUi)
-        self.connect(self.search_tickers, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
+        self.connect(self.search_tickers_button, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
+        self.connect(self.export_button, QtCore.SIGNAL("clicked()"), self.export_clicked)
 
         self.setGeometry(300, 300, 800, 300)
         self.setWindowTitle('TakeStock    ' + datetime.date.today().strftime("%b %d, %Y"))
         self.show()
 
+    def export_clicked(self):
+        import csv
+        file_name = QtGui.QFileDialog.getSaveFileName(QtGui.QFileDialog(), caption="Save File", filter='*.csv',)
+        with open(file_name, newline='', mode='w') as csvfile:
+            csv_writer = csv.writer(csvfile)
+            row_result = []
+            csv_writer.writerow(self.header_names)
+            for row_index in range(self.results_table.rowCount()):
+                for col_index in range(self.results_table.columnCount()):
+                    row_result.append(self.results_table.item(row_index, col_index).text())
+                csv_writer.writerow(row_result)
+                row_result = []
+
+
     def search_tickers_clicked(self):
-        self.search_tickers.setEnabled(False)
+        self.search_tickers_button.setEnabled(False)
         self.thread.start_thread(gui=self)
 
     def updateUi(self):
-        self.search_tickers.setEnabled(True)
+        self.search_tickers_button.setEnabled(True)
 
 
 class Worker(QtCore.QThread):
