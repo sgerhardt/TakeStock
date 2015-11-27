@@ -12,6 +12,22 @@ def main():
     pass
 
 
+def get_share_price(ticker=''):
+    """
+    This function gets the share price for the given ticker symbol. It performs a request to the
+    nasdaq url and parses the response to find the share price.
+    :param ticker: The stock symbol/ticker to use for the lookup
+    :return: String containing the earnings date
+    """
+    try:
+        earnings_url = 'http://www.nasdaq.com/symbol/' + ticker.lower()
+        request = requests.get(earnings_url)
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        return soup.find('div', class_="qwidget-dollar").text
+    except:
+        return 'No Data Found'
+
+
 def get_earnings_date(ticker=''):
     """
     This function gets the earnings date for the given ticker symbol. It performs a request to the
@@ -80,6 +96,23 @@ def get_rsi(ticker=''):
     except:
         return 'No Data Found'
 
+# def get_past_consensus_performance(ticker=''):
+#TODO finish implementation
+#     """
+#     This function gets the past performance versus analyst consensus for the given ticker symbol.
+#     It performs a request to the nasdaq url and parses the response to get the data
+#     :param ticker: The stock symbol/ticker to use for the lookup
+#     :return: String containing the performance against consensus for past
+#     """
+#     try:
+#         earnings_url = 'http://www.nasdaq.com/symbol/' + ticker.lower() + '/earnings-surprise'
+#         request = requests.get(earnings_url)
+#         soup = bs4.BeautifulSoup(request.text, 'html.parser')
+#         # tag = soup.find(text=re.compile(''))
+#         # return tag[tag.index(':') + 1:].strip()
+#     except:
+#         return 'No Data Found'
+
 
 def get_stocks(tickers=None):
     """
@@ -88,7 +121,7 @@ def get_stocks(tickers=None):
     stocks = []
     for ticker in tickers:
         stocks.append(
-            Stock(price=Suds_Client.quote_request(ticker=ticker), earnings_date=get_earnings_date(ticker=ticker),
+            Stock(price=get_share_price(ticker), earnings_date=get_earnings_date(ticker=ticker),
                   ticker=ticker, peg_ratio=get_peg_ratio(ticker), rsi=get_rsi(ticker=ticker),
                   fifty_two=get_fifty_two_week_high_low(ticker=ticker)))
     return stocks
