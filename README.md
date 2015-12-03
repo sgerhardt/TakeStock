@@ -7,7 +7,7 @@ Earning dates within a week are bolded and the font size increased.
 
 It gets 52 week highs and lows from http://www.barchart.com/.
 
-It gets peg ratios from http://finance.yahoo.com.
+It gets pe and peg ratios from http://finance.yahoo.com.
 
 It gets RSIs and earnings dates from http://www.nasdaq.com/.
 

@@ -64,6 +64,22 @@ def get_fifty_two_week_high_low(ticker=''):
         return 'No Data Found'
 
 
+def get_trailing_pe_ratio(ticker=''):
+    """
+    This function gets the trailing PE ratio for the given ticker symbol. It performs a request to the
+    Yahoo url and parses the response to find the trailing PE ratio.
+    :param ticker: The stock symbol/ticker to use for the lookup
+    :return: String containing the trailing PE ratio
+    """
+    try:
+        key_stats_url = 'http://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+        request = requests.get(key_stats_url)
+        soup = bs4.BeautifulSoup(request.text, 'html.parser')
+        return soup.find(text=re.compile('Trailing P/E')).findNext('td').text
+    except:
+        return 'No Data Found'
+
+
 def get_peg_ratio(ticker=''):
     """
     This function gets the PEG ratio for the given ticker symbol. It performs a request to the
@@ -122,8 +138,8 @@ def get_stocks(tickers=None):
     for ticker in tickers:
         stocks.append(
             Stock(price=get_share_price(ticker), earnings_date=get_earnings_date(ticker=ticker),
-                  ticker=ticker, peg_ratio=get_peg_ratio(ticker), rsi=get_rsi(ticker=ticker),
-                  fifty_two=get_fifty_two_week_high_low(ticker=ticker)))
+                  ticker=ticker, pe_ratio=get_trailing_pe_ratio(ticker), peg_ratio=get_peg_ratio(ticker),
+                  rsi=get_rsi(ticker=ticker), fifty_two=get_fifty_two_week_high_low(ticker=ticker)))
     return stocks
 
 
@@ -132,7 +148,7 @@ class Stock:
     Defines a stock.
     """
 
-    def __init__(self, price=0, earnings_date='', ticker='', peg_ratio='', rsi='', fifty_two=''):
+    def __init__(self, price=0, earnings_date='', ticker='', pe_ratio='', peg_ratio='', rsi='', fifty_two=''):
         self.price = price
         self.earnings_date = earnings_date
         self.earnings_soon = False
@@ -151,6 +167,7 @@ class Stock:
                 self.earnings_soon = True
 
         self.ticker = ticker
+        self.pe_ratio = pe_ratio
         self.peg_ratio = peg_ratio
         self.rsi = rsi
         self.fifty_two = fifty_two

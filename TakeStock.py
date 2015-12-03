@@ -21,8 +21,8 @@ class MyForm(QtGui.QWidget):
 
         self.search_tickers_button = QtGui.QPushButton('Search Tickers')
         self.results_table = QtGui.QTableWidget()
-        self.results_table.setColumnCount(6)
-        self.header_names = ['Ticker', 'Price', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
+        self.header_names = ['Ticker', 'Price', 'PE Ratio (TTM)', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
+        self.results_table.setColumnCount(len(self.header_names))
         self.results_table.setHorizontalHeaderLabels(self.header_names)
         self.results_table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
         self.export_button = QtGui.QPushButton('Export')
@@ -97,13 +97,22 @@ class Worker(QtCore.QThread):
                     item = QtGui.QTableWidgetItem(row.ticker)
                 elif self.gui.header_names[col_index] == 'Price':
                     item = QtGui.QTableWidgetItem(row.price)
+                elif self.gui.header_names[col_index] == 'PE Ratio (TTM)':
+                    item = QtGui.QTableWidgetItem(row.pe_ratio)
+                    if is_number(row.pe_ratio):
+                        if 0 < float(row.pe_ratio) <= 20:
+                            item.setTextColor(QtGui.QColor('green'))
+                        elif 20 < float(row.pe_ratio) < 70:
+                            item.setTextColor(QtGui.QColor('orange'))
+                        elif float(row.pe_ratio) > 70:
+                            item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'PEG Ratio':
                     item = QtGui.QTableWidgetItem(row.peg_ratio)
                     if is_number(row.peg_ratio):
                         if 0 < float(row.peg_ratio) <= 1:
                             item.setTextColor(QtGui.QColor('green'))
                         elif float(row.peg_ratio) > 1:
-                            item.setTextColor(QtGui.QColor('orange'))  # Dark Yellow
+                            item.setTextColor(QtGui.QColor('orange'))
                         elif float(row.peg_ratio) < 0:
                             item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'RSI':
@@ -112,7 +121,7 @@ class Worker(QtCore.QThread):
                         if 0 < float(row.rsi) <= 30:
                             item.setTextColor(QtGui.QColor('green'))
                         elif 30 < float(row.rsi) < 70:
-                            item.setTextColor(QtGui.QColor('orange'))  # Dark Yellow
+                            item.setTextColor(QtGui.QColor('orange'))
                         elif float(row.rsi) > 70:
                             item.setTextColor(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == '52 Wk Hi-Low':
