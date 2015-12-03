@@ -40,7 +40,7 @@ class MyForm(QtGui.QWidget):
         self.connect(self.search_tickers_button, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
         self.connect(self.export_button, QtCore.SIGNAL("clicked()"), self.export_clicked)
 
-        self.setGeometry(300, 300, 800, 325)
+        self.setGeometry(300, 300, 1000, 325)
         self.setWindowTitle('TakeStock    ' + datetime.date.today().strftime("%b %d, %Y"))
         self.show()
 

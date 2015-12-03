@@ -17,6 +17,7 @@ def main():
     global smtp
     global port
     global verbose
+    global pe_ratio
     global peg_ratio
     global rsi
     global fifty_two
@@ -28,6 +29,7 @@ def main():
     port = None
     tickers = None
     verbose = False
+    pe_ratio = False
     peg_ratio = False
     rsi = False
     fifty_two = False
@@ -37,9 +39,9 @@ def main():
 
     # Read the commandline options
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vgif", ['help', 'email_sender=', 'email_receiver=',
+        opts, args = getopt.getopt(sys.argv[1:], "he:r:p:t:s:o:vzgif", ['help', 'email_sender=', 'email_receiver=',
                                                                        'password=', 'tickers=' 'smtp=', 'port=',
-                                                                       'verbose', 'growth', 'rsi', 'fifty_two'])
+                                                                       'verbose', 'pe', 'growth', 'rsi', 'fifty_two'])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -61,6 +63,8 @@ def main():
             port = a
         elif o in ('-v', '--verbose'):
             verbose = True
+        elif o in ('-z', '--pe_ratio'):
+            pe_ratio = True
         elif o in ('-g', '--peg_ratio'):
             peg_ratio = True
         elif o in ('-i', '--rsi'):
@@ -89,9 +93,10 @@ def usage():
             -s --smtp               - smtp server that sends the email report
             -t --port               - port for the smtp server
             -v --verbose            - print earnings date and price
+            -o --pe_ratio           - print pe ratio
             -g --peg_ratio          - print peg ratio
             -r --rsi                - print relative strength indicator
-            -f --fifty_two           - print fifty-two week high and low
+            -f --fifty_two          - print fifty-two week high and low
             \n\n
             Examples:
             TakeStock.py -e sender_email@your_domain.com -p sender_password -r email_recipient@recipient_domain.com -s smtp.gmail.com -p 587 -t 'AAPL,MSFT,AMT' -v
@@ -114,6 +119,8 @@ def get_results(tickers=None):
         string_to_line = ''
         if peg_ratio:
             string_header += '{:<13}'.format('Peg Ratio')
+        if pe_ratio:
+            string_header += '{:<13}'.format('PE Ratio')
         if rsi:
             string_header += '{:<13}'.format('RSI')
         if fifty_two:
@@ -124,6 +131,8 @@ def get_results(tickers=None):
             string_to_line = '{:<10}'.format(stock.ticker) + '{:<17}'.format(stock.earnings_date)
             if peg_ratio:
                 string_to_line += '{:<13}'.format(str(stock.peg_ratio))
+            if pe_ratio:
+                string_to_line += '{:<13}'.format(str(stock.pe_ratio))
             if rsi:
                 string_to_line += '{:<13}'.format(str(stock.rsi))
             if fifty_two:
@@ -189,5 +198,6 @@ else:
     # Running from GUI or other context
     verbose = True
     rsi = True
-    peg_ratio = True
     fifty_two = True
+    pe_ratio = True
+    peg_ratio = True
