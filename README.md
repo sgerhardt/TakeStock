@@ -1,5 +1,5 @@
 # TakeStock
-[![Build Status](https://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)]
+![Build Status](https://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
 
 This project scrapes multiple sites for stock data.
 
