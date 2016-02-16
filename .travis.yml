@@ -8,3 +8,6 @@ python:
   - "3.5"
 
 script: "python -m unittest"
+
+after_success:
+    codecov
