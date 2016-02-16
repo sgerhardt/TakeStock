@@ -10,7 +10,8 @@ python:
 script: "python -m unittest"
 
 install:
-  - pip install codecov
+  - pip install pytest-cov
 
 after_success:
-    codecov
+    py.test --cov=./
+    codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd

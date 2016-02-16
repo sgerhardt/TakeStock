@@ -1,12 +1,12 @@
 __author__ = 'Sean Gerhardt'
 
+import getopt
 import smtplib
+import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import getopt
-import sys
 
-import QuarterlyReport
+from src import QuarterlyReport
 
 
 def main():

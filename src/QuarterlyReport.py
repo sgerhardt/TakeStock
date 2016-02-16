@@ -1,11 +1,11 @@
 __author__ = 'Sean Gerhardt'
 
-import datetime
 import calendar
-import requests
-import bs4
+import datetime
 import re
-import Suds_Client
+
+import bs4
+import requests
 
 
 def main():

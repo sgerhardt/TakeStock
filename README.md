@@ -1,6 +1,6 @@
 # TakeStock
 ![Build Status](https://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
-
+[![codecov.io](https://codecov.io/github/sgerhardt/TakeStock/coverage.svg?branch=master)](https://codecov.io/github/sgerhardt/TakeStock?branch=master)
 This project scrapes multiple sites for stock data.
 
 It scrapes the NASDAQ site for earnings dates and gets stock prices using a web service.

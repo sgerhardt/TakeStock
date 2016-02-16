@@ -1,12 +1,12 @@
 __author__ = 'Sean Gerhardt'
 
-import sys
 import datetime
+import sys
 
-from PyQt4 import QtGui
 from PyQt4 import QtCore
+from PyQt4 import QtGui
 
-import TakeStock_Reporter
+from src import TakeStock_Reporter
 
 
 class MyForm(QtGui.QWidget):
