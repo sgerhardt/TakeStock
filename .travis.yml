@@ -1,0 +1,10 @@
+# see http://about.travis-ci.org/docs/user/languages/python/ for more hints
+language: python
+
+python:
+  # using major version aliases
+  - "3.3"
+  - "3.4"
+  - "3.5"
+
+script: "python -m unittest"
