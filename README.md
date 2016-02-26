@@ -20,7 +20,6 @@ If ran as GUI, TakeStock.py is the main script.
 
 If run as CLI, TakeStock_Reporter.py is the main script. Run this script to see all the commands.
 This CLI provides support for the emailing of Stock reports.
-This project has suds-jurko and BeautifulSoup4 as requirements when run without the executable releases.
 
 ![Alt text](/screenshot_gui.png?raw=true "TakeStock in GUI action")
 ![Alt text](/screenshot.png?raw=true "TakeStock in CLI action")
