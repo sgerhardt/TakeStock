@@ -1,5 +1,7 @@
 # see http://about.travis-ci.org/docs/user/languages/python/ for more hints
+dist: trusty
 language: python
+sudo: required 
 
 python:
   # using major version aliases
@@ -7,11 +9,15 @@ python:
   - "3.4"
   - "3.5"
 
-script: "python -m unittest discover"
+script: "python3 -m unittest"
 
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get -y install python3-pip
+  
 install:
-  - pip install pytest-cov
+  - pip3 install pytest-cov
 
 after_success:
-    python3 -m pytest ./test/
+    python3 -m pytest --cov=./src
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
