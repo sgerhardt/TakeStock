@@ -1,6 +1,8 @@
 # see http://about.travis-ci.org/docs/user/languages/python/ for more hints
 language: python
 
+sudo: required 
+
 python:
   # using major version aliases
   - "3.3"
@@ -10,7 +12,7 @@ python:
 script: "python3 -m unittest test/Test_TakeStock_Reporter.py test/Test_QuarterlyReport.py"
 
 install:
-  - apt-get install python3-pip
+  - sudo apt-get install python3-pip
   - pip3 install pytest-cov
 
 after_success:
