@@ -9,7 +9,7 @@ python:
   - "3.4"
   - "3.5"
 
-script: "python3 -m unittest test/Test_TakeStock_Reporter.py test/Test_QuarterlyReport.py"
+script: "python3 -m unittest"
 
 before_install:
   - sudo apt-get -qq update
