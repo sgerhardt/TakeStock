@@ -12,11 +12,12 @@ python:
 script: "python3 -m unittest test/Test_TakeStock_Reporter.py test/Test_QuarterlyReport.py"
 
 before_install:
-  - sudo apt-get install python3-pip
+  - sudo apt-get -qq update
+  - sudo apt-get -y install python3-pip
   
 install:
   - pip3 install pytest-cov
 
 after_success:
-    py.test --cov=./src
+    python3 -m pytest --cov=./src
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
