@@ -9,7 +9,7 @@ python:
   - "3.4"
   - "3.5"
 
-script: "python3 -m unittest"
+script: "python3 -m unittest discover"
 
 before_install:
   - sudo apt-get -qq update
@@ -19,5 +19,5 @@ install:
   - pip3 install pytest-cov
 
 after_success:
-    python3 -m pytest --cov=./src
+    python3 -m pytest ./test
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
