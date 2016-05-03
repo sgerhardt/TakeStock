@@ -7,10 +7,11 @@ python:
   - "3.4"
   - "3.5"
 
-script: "python -m unittest"
+script: "python3 -m unittest test/Test_TakeStock_Reporter.py test/Test_QuarterlyReport.py"
 
 install:
-  - pip install pytest-cov
+  - apt-get install python3-pip
+  - pip3 install pytest-cov
 
 after_success:
     py.test --cov=./src
