@@ -13,5 +13,5 @@ install:
   - pip install pytest-cov
 
 after_success:
-    py.test --cov=./
+    py.test --cov=./src
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
