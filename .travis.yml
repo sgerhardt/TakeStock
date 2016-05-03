@@ -1,6 +1,6 @@
 # see http://about.travis-ci.org/docs/user/languages/python/ for more hints
+dist: trusty
 language: python
-
 sudo: required 
 
 python:
