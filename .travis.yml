@@ -7,11 +7,11 @@ python:
   - "3.4"
   - "3.5"
 
-script: "python -m unittest"
+script: "python -m unittest discover"
 
 install:
   - pip install pytest-cov
 
 after_success:
-    py.test --cov=./
+    python3 -m pytest ./test/
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
