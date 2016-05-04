@@ -20,5 +20,5 @@ install:
   - pip3 install -r dev_requirements.txt
 
 after_success:
-    python3 -m pytest --cov ./
-    codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
+  - python3 -m pytest --cov ./
+  - codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
