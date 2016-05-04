@@ -17,6 +17,7 @@ before_install:
   
 install:
   - pip3 install pytest-cov
+  - pip3 install codecov
   - pip3 install -r dev_requirements.txt
 
 after_success:
