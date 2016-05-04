@@ -1,5 +1,5 @@
 suds-jurko==0.6
-beautifulsoup4==4.3.2
+beautifulsoup4==4.4.1
 requests==2.7.0
 
 #To get the above reqs, run: pip install -r dev_requirements.txt

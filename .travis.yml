@@ -7,6 +7,7 @@ python:
   # using major version aliases
   - "3.3"
   - "3.4"
+  - "3.5"
 
 script: "python3 -m unittest discover"
 
@@ -19,5 +20,5 @@ install:
   - pip3 install -r dev_requirements.txt
 
 after_success:
-    python3 -m pytest ./test
+    python3 -m pytest --cov ./
     codecov -t db9d21de-595d-4797-b4df-cdf32854c3dd
