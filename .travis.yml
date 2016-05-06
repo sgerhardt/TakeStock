@@ -14,6 +14,7 @@ script: "python3 -m pytest"
 before_install:
   - sudo apt-get -qq update
   - sudo apt-get -y install python3-pip
+  - sudo apt-get install python3-pyqt4
   
 install:
   - pip3 install pytest-cov
