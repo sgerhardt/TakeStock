@@ -6,7 +6,7 @@ import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import QuarterlyReport
+from src import QuarterlyReport
 
 
 def main():

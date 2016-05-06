@@ -4,15 +4,15 @@ import time
 from PyQt4.QtTest import QTest
 from PyQt4.QtCore import Qt
 
-from src import TakeStock
+from src.TakeStock import *
 
 
 class MyFormTest(unittest.TestCase):
     def test_defaults(self):
         ticker = 'aapl'
-        harness = TakeStock.test_harness()
-        form = TakeStock.MyForm()
-        self.assertEquals(form.ticker_label.text(), "Ticker Entry")
+        harness = test_harness()
+        form = MyForm()
+        self.assertEqual(form.ticker_label.text(), "Ticker Entry")
         QTest.keyClicks(form.ticker_entry, ticker)
         QTest.mouseClick(form.search_tickers_button, Qt.LeftButton)
         # Wait 10 seconds before timing out
