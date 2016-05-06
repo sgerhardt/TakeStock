@@ -6,7 +6,7 @@ import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from src import QuarterlyReport
+import QuarterlyReport
 
 
 def main():
@@ -189,7 +189,7 @@ def send_email(tickers=None, to_addr='your_email_here@your_domain.com'):
         server.login(email_sender, email_cred)
         server.sendmail(email_sender, email_receiver, message.as_string())
         server.quit()
-
+        return html
 
 if __name__ == "__main__":
     # If the script is being invoked directly, run the main method.

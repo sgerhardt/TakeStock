@@ -6,7 +6,7 @@ import sys
 from PyQt4 import QtCore
 from PyQt4 import QtGui
 
-from src import TakeStock_Reporter
+import TakeStock_Reporter
 
 
 class MyForm(QtGui.QWidget):
@@ -146,7 +146,15 @@ def is_number(num):
         return False
 
 
-app = QtGui.QApplication(sys.argv)
-mainWindow = MyForm()
-status = app.exec_()
-sys.exit(status)
+def main():
+    app = QtGui.QApplication(sys.argv)
+    mainWindow = MyForm()
+    status = app.exec_()
+    sys.exit(status)
+
+
+def test_harness():
+    return QtGui.QApplication(sys.argv)
+
+if __name__ == "__main__":
+    main()
