@@ -2,4 +2,8 @@ suds-jurko==0.6
 beautifulsoup4==4.4.1
 requests==2.7.0
 
-#To get the above reqs, run: pip install -r dev_requirements.txt
+# To get the above reqs, on Windows run: pip install -r dev_requirements.txt
+# If on Ubuntu, run: pip3 install -r dev_requirements.txt
+
+# PyQt4 is also required. On Windows, find installer from QT website.
+# On Ubuntu, run: sudo apt-get install python3-pyqt4
