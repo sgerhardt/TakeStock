@@ -5,9 +5,9 @@ sudo: required
 
 python:
   # using major version aliases
-  - "3.3_with_system_site_packages"
-  - "3.4_with_system_site_packages"
-  - "3.5_with_system_site_packages"
+  - "3.3"
+  - "3.4"
+  - "3.5"
 
 script: "python3 -m pytest ./test/test_QuarterlyReport.py ./test/test_TakeStock_Reporter.py"
 
