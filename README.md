@@ -16,9 +16,8 @@ It gets RSIs and earnings dates from http://www.nasdaq.com/.
 
 This project may be run as either a CLI or GUI app.
 
-If ran as GUI, launch_TakeStock.py is the main script.
+launch_TakeStock.py is the main script. If given arguments, it will run from CLI.
 
-If run as CLI, TakeStock_Reporter.py is the main script. Run this script to see all the commands.
 This CLI provides support for the emailing of Stock reports.
 
 ![Alt text](/screenshot_gui.png?raw=true "TakeStock in GUI action")

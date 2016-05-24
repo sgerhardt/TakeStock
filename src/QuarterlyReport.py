@@ -153,18 +153,19 @@ class Stock:
         self.earnings_date = earnings_date
         self.earnings_soon = False
         if self.earnings_date:
-            month_index = 0
-            for idx, month in enumerate(calendar.month_name):
-                if month.startswith(self.earnings_date[0:3]):
-                    month_index = idx
-                    break
-            earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 4:]),
-                                          month=month_index,
-                                          day=int(self.earnings_date[
-                                                  self.earnings_date.index(',') - 2:self.earnings_date.index(
-                                                      ',')].strip()))
-            if 0 <= abs((earnings_date - datetime.date.today()).days) <= 7:
-                self.earnings_soon = True
+            if self.earnings_date != 'No Data Found':
+                month_index = 0
+                for idx, month in enumerate(calendar.month_name):
+                    if month.startswith(self.earnings_date[0:3]):
+                        month_index = idx
+                        break
+                earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 4:]),
+                                              month=month_index,
+                                              day=int(self.earnings_date[
+                                                      self.earnings_date.index(',') - 2:self.earnings_date.index(
+                                                          ',')].strip()))
+                if 0 <= abs((earnings_date - datetime.date.today()).days) <= 7:
+                    self.earnings_soon = True
 
         self.ticker = ticker
         self.pe_ratio = pe_ratio
