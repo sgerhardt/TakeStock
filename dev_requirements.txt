@@ -1,6 +1,6 @@
 suds-jurko==0.6
 beautifulsoup4==4.4.1
-requests==2.7.0
+requests>=2.20.0
 
 # To get the above reqs, on Windows run: pip install -r dev_requirements.txt
 # If on Ubuntu, run: pip3 install -r dev_requirements.txt
