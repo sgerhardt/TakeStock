@@ -1,6 +1,6 @@
 # TakeStock
-![Build Status](httpss://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
-[![codecov.io](httpss://codecov.io/github/sgerhardt/TakeStock/coverage.svg?branch=master)](httpss://codecov.io/github/sgerhardt/TakeStock?branch=master)
+![Build Status](https://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
+[![codecov.io](https://codecov.io/github/sgerhardt/TakeStock/coverage.svg?branch=master)](httpss://codecov.io/github/sgerhardt/TakeStock?branch=master)
 
 This project scrapes multiple sites for stock data.
 
