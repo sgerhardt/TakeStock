@@ -33,16 +33,11 @@ class MyForm(QtWidgets.QWidget):
         mainLayout.addWidget(self.export_button)
         self.setLayout(mainLayout)
 
-        self.work = Worker()
+        self.work = Worker(None, self.update_ui)
         self.thread = QtCore.QThread()
 
         self.work.moveToThread(self.thread)
-
-        self.work.finished.connect(self.thread.quit)
-        self.thread.started.connect(self.update_ui)
         self.thread.start()
-
-        self.thread.finished.connect(self.update_ui)
 
         self.search_tickers_button.clicked.connect(self.search_tickers_clicked)
         self.export_button.clicked.connect(self.export_clicked)
@@ -75,9 +70,10 @@ class MyForm(QtWidgets.QWidget):
 
 
 class Worker(QtCore.QThread):
-    def __init__(self, parent=None):
-
+    def __init__(self, parent=None, update_ui=None):
         QtCore.QThread.__init__(self, parent)
+        if update_ui:
+            self.finished.connect(update_ui)
         self.exiting = False
 
     def __del__(self):
