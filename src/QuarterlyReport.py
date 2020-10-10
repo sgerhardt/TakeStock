@@ -1,6 +1,5 @@
 __author__ = 'Sean Gerhardt'
 
-import calendar
 import datetime
 import re
 
@@ -12,6 +11,9 @@ def main():
     pass
 
 
+timeout = 3
+
+
 def get_share_price(ticker=''):
     """
     This function gets the share price for the given ticker symbol. It performs a request to the
@@ -20,10 +22,11 @@ def get_share_price(ticker=''):
     :return: String containing the earnings date
     """
     try:
-        earnings_url = 'https://www.nasdaq.com/symbol/' + ticker.lower()
-        request = requests.get(earnings_url, timeout=5)
+        earnings_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+        request = requests.get(earnings_url, timeout=timeout)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
-        return soup.find('div', class_="qwidget-dollar").text
+        # TODO replace magic string with reasonable/free API call
+        return '$' + soup.find('span', {'data-reactid': '50'}).text
     except:
         return 'No Data Found'
 
@@ -31,16 +34,19 @@ def get_share_price(ticker=''):
 def get_earnings_date(ticker=''):
     """
     This function gets the earnings date for the given ticker symbol. It performs a request to the
-    nasdaq url and parses the response to find the earnings date.
+    zacks url and parses the response to find the earnings date.
     :param ticker: The stock symbol/ticker to use for the lookup
     :return: String containing the earnings date
     """
     try:
-        earnings_url = 'https://www.nasdaq.com/earnings/report/' + ticker.lower()
-        request = requests.get(earnings_url, timeout=5)
+        earnings_url = 'https://www.zacks.com/stock/quote/' + ticker.upper()
+        request = requests.get(earnings_url, timeout=timeout, headers={
+         'User-Agent': 'Mozilla'
+        })
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
-        tag = soup.find(text=re.compile('Earnings announcement*'))
-        return tag[tag.index(':') + 1:].strip()
+        # TODO replace magic string with reasonable/free API call
+        return soup.find('section', {'id': 'stock_key_earnings'}).find('table', attrs={'abut_bottom'}).find('tbody').findAll(
+            'tr')[4].findAll('td')[1].text.replace('*AMC', '')
     except:
         return 'No Data Found'
 
@@ -48,18 +54,24 @@ def get_earnings_date(ticker=''):
 def get_fifty_two_week_high_low(ticker=''):
     """
     This function gets the fifty-two week high and lows for the given ticker symbol. It performs a request to the
-    https://www.barchart.com/ url and parses the response to find the fifty-two week high and low.
+    Yahoo url and parses the response to find the fifty-two week high and low.
     :param ticker: The stock symbol/ticker to use for the lookup
     :return: String containing the fifty two week high and low
     """
     try:
-        earnings_url = 'https://www.barchart.com/quotes/stocks/' + ticker.upper()
-        request = requests.get(earnings_url, timeout=5)
+        earnings_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+        request = requests.get(earnings_url, timeout=timeout)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
-        found_value = soup.find(text=re.compile('52Wk'))
-        high_text = found_value.findPrevious('td').text.strip()
-        low_text = found_value.findNext('td').text.strip()
-        return high_text[0:high_text.index('\t')] + 'H ' + low_text[0:low_text.index('\t')] + 'L'
+        # TODO replace magic string with reasonable/free API call
+        rows = soup.findAll('tr')
+        high, low = 0, 0
+        for row in rows:
+            if '52 Week High' in row.text:
+               high = row.contents[1].contents[0]
+        for row in rows:
+            if '52 Week Low' in row.text:
+               low = row.contents[1].contents[0]
+        return high + 'H ' + low + 'L'
     except:
         return 'No Data Found'
 
@@ -73,7 +85,7 @@ def get_trailing_pe_ratio(ticker=''):
     """
     try:
         key_stats_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
-        request = requests.get(key_stats_url, timeout=5)
+        request = requests.get(key_stats_url, timeout=timeout)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find(text=re.compile('Trailing P/E')).findNext('td').text
     except:
@@ -89,7 +101,7 @@ def get_peg_ratio(ticker=''):
     """
     try:
         key_stats_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
-        request = requests.get(key_stats_url, timeout=5)
+        request = requests.get(key_stats_url, timeout=timeout)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find(text=re.compile('PEG Ratio')).findNext('td').text
     except:
@@ -106,7 +118,7 @@ def get_rsi(ticker=''):
     try:
         rsi_url = 'https://charting.nasdaq.com/ext/charts.dll?2-1-14-0-0-512-03NA000000' + ticker.upper() \
                   + '-&SF:1|27-SH:27=10-BG=FFFFFF-BT=0-WD=635-HT=395--XTBL-'
-        request = requests.get(rsi_url, timeout=5)
+        request = requests.get(rsi_url, timeout=timeout)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find_all('td', class_="DrillDownData")[1].text
     except:
@@ -155,16 +167,11 @@ class Stock:
         self.earnings_soon = False
         if self.earnings_date:
             if self.earnings_date != 'No Data Found':
-                month_index = 0
-                for idx, month in enumerate(calendar.month_name):
-                    if month.startswith(self.earnings_date[0:3]):
-                        month_index = idx
-                        break
-                earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 4:]),
-                                              month=month_index,
+                earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 2:]),
+                                              month=int(self.earnings_date[0:2]),
                                               day=int(self.earnings_date[
-                                                      self.earnings_date.index(',') - 2:self.earnings_date.index(
-                                                          ',')].strip()))
+                                                      self.earnings_date.index('/') - 2:self.earnings_date.index(
+                                                          '/')].strip()))
                 if 0 <= abs((earnings_date - datetime.date.today()).days) <= 7:
                     self.earnings_soon = True
 

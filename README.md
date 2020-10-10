@@ -8,11 +8,11 @@ It scrapes the NASDAQ site for earnings dates and gets stock prices using a web 
 
 Earning dates within a week are bolded and the font size increased. 
 
-It gets 52 week highs and lows from https://www.barchart.com/.
+It gets 52 week highs and lows, pe and peg ratios from https://finance.yahoo.com.
 
-It gets pe and peg ratios from https://finance.yahoo.com.
+It gets RSIs from https://www.nasdaq.com/.
 
-It gets RSIs and earnings dates from https://www.nasdaq.com/.
+It gets earnings dates from https://https://www.zacks.com/
 
 This project may be run as either a CLI or GUI app.
 
