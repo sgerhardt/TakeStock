@@ -1,6 +1,6 @@
 # TakeStock
-![Build Status](https://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
-[![codecov.io](https://codecov.io/github/sgerhardt/TakeStock/coverage.svg?branch=master)](https://codecov.io/github/sgerhardt/TakeStock?branch=master)
+![Build Status](httpss://travis-ci.org/sgerhardt/TakeStock.svg?branch=master)
+[![codecov.io](httpss://codecov.io/github/sgerhardt/TakeStock/coverage.svg?branch=master)](httpss://codecov.io/github/sgerhardt/TakeStock?branch=master)
 
 This project scrapes multiple sites for stock data.
 
@@ -8,11 +8,11 @@ It scrapes the NASDAQ site for earnings dates and gets stock prices using a web 
 
 Earning dates within a week are bolded and the font size increased. 
 
-It gets 52 week highs and lows from http://www.barchart.com/.
+It gets 52 week highs and lows from https://www.barchart.com/.
 
-It gets pe and peg ratios from http://finance.yahoo.com.
+It gets pe and peg ratios from https://finance.yahoo.com.
 
-It gets RSIs and earnings dates from http://www.nasdaq.com/.
+It gets RSIs and earnings dates from https://www.nasdaq.com/.
 
 This project may be run as either a CLI or GUI app.
 

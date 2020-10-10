@@ -3,42 +3,49 @@ __author__ = 'Sean Gerhardt'
 import datetime
 import sys
 
-from PyQt4 import QtCore
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from src import TakeStock_Reporter
 
 
-class MyForm(QtGui.QWidget):
+class MyForm(QtWidgets.QWidget):
     def __init__(self):
         super(MyForm, self).__init__()
 
-        self.ticker_label = QtGui.QLabel('Ticker Entry')
-        self.ticker_entry = QtGui.QLineEdit()
-        hbox = QtGui.QHBoxLayout()
+        self.ticker_label = QtWidgets.QLabel('Ticker Entry')
+        self.ticker_entry = QtWidgets.QLineEdit()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.ticker_label)
         hbox.addWidget(self.ticker_entry)
 
-        self.search_tickers_button = QtGui.QPushButton('Search Tickers')
-        self.results_table = QtGui.QTableWidget()
+        self.search_tickers_button = QtWidgets.QPushButton('Search Tickers')
+        self.results_table = QtWidgets.QTableWidget()
         self.header_names = ['Ticker', 'Price', 'PE Ratio (TTM)', 'PEG Ratio', 'RSI', '52 Wk Hi-Low', 'Earnings Date']
         self.results_table.setColumnCount(len(self.header_names))
         self.results_table.setHorizontalHeaderLabels(self.header_names)
-        self.results_table.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
-        self.export_button = QtGui.QPushButton('Export')
+        self.results_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.Stretch)
+        self.export_button = QtWidgets.QPushButton('Export')
 
-        mainLayout = QtGui.QVBoxLayout()
+        mainLayout = QtWidgets.QVBoxLayout()
         mainLayout.addLayout(hbox)
         mainLayout.addWidget(self.search_tickers_button)
         mainLayout.addWidget(self.results_table)
         mainLayout.addWidget(self.export_button)
         self.setLayout(mainLayout)
 
-        self.thread = Worker()
-        self.connect(self.thread, QtCore.SIGNAL("finished()"), self.update_ui)
-        self.connect(self.thread, QtCore.SIGNAL("terminated()"), self.update_ui)
-        self.connect(self.search_tickers_button, QtCore.SIGNAL("clicked()"), self.search_tickers_clicked)
-        self.connect(self.export_button, QtCore.SIGNAL("clicked()"), self.export_clicked)
+        self.work = Worker()
+        self.thread = QtCore.QThread()
+
+        self.work.moveToThread(self.thread)
+
+        self.work.finished.connect(self.thread.quit)
+        self.thread.started.connect(self.update_ui)
+        self.thread.start()
+
+        self.thread.finished.connect(self.update_ui)
+
+        self.search_tickers_button.clicked.connect(self.search_tickers_clicked)
+        self.export_button.clicked.connect(self.export_clicked)
 
         self.setGeometry(300, 300, 1000, 325)
         self.setWindowTitle('TakeStock    ' + datetime.date.today().strftime("%b %d, %Y"))
@@ -46,7 +53,7 @@ class MyForm(QtGui.QWidget):
 
     def export_clicked(self):
         import csv
-        file_name = QtGui.QFileDialog.getSaveFileName(QtGui.QFileDialog(), caption="Save File", filter='*.csv',)
+        file_name = QtWidgets.QFileDialog.getSaveFileName(QtWidgets.QFileDialog(), caption="Save File", filter='*.csv',)
         with open(file_name, newline='', mode='w') as csvfile:
             csv_writer = csv.writer(csvfile)
             row_result = []
@@ -60,7 +67,7 @@ class MyForm(QtGui.QWidget):
     def search_tickers_clicked(self):
         self.search_tickers_button.setEnabled(False)
         self.setCursor(QtCore.Qt.BusyCursor)
-        self.thread.start_thread(gui=self)
+        self.work.start_thread(gui=self)
 
     def update_ui(self):
         self.search_tickers_button.setEnabled(True)
@@ -94,47 +101,47 @@ class Worker(QtCore.QThread):
         for row_index, row in enumerate(self.gui.results):
             for col_index in range(len(row.__dict__) - 1):
                 if self.gui.header_names[col_index] == 'Ticker':
-                    item = QtGui.QTableWidgetItem(row.ticker)
+                    item = QtWidgets.QTableWidgetItem(row.ticker)
                 elif self.gui.header_names[col_index] == 'Price':
-                    item = QtGui.QTableWidgetItem(row.price)
+                    item = QtWidgets.QTableWidgetItem(row.price)
                 elif self.gui.header_names[col_index] == 'PE Ratio (TTM)':
-                    item = QtGui.QTableWidgetItem(row.pe_ratio)
+                    item = QtWidgets.QTableWidgetItem(row.pe_ratio)
                     if is_number(row.pe_ratio):
                         if 0 < float(row.pe_ratio) <= 20:
-                            item.setTextColor(QtGui.QColor('green'))
+                            item.setForeground(QtGui.QColor('green'))
                         elif 20 < float(row.pe_ratio) < 70:
-                            item.setTextColor(QtGui.QColor('orange'))
+                            item.setForeground(QtGui.QColor('orange'))
                         elif float(row.pe_ratio) > 70:
-                            item.setTextColor(QtGui.QColor('red'))
+                            item.setForeground(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'PEG Ratio':
-                    item = QtGui.QTableWidgetItem(row.peg_ratio)
+                    item = QtWidgets.QTableWidgetItem(row.peg_ratio)
                     if is_number(row.peg_ratio):
                         if 0 < float(row.peg_ratio) <= 1:
-                            item.setTextColor(QtGui.QColor('green'))
+                            item.setForeground(QtGui.QColor('green'))
                         elif float(row.peg_ratio) > 1:
-                            item.setTextColor(QtGui.QColor('orange'))
+                            item.setForeground(QtGui.QColor('orange'))
                         elif float(row.peg_ratio) < 0:
-                            item.setTextColor(QtGui.QColor('red'))
+                            item.setForeground(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == 'RSI':
-                    item = QtGui.QTableWidgetItem(row.rsi)
+                    item = QtWidgets.QTableWidgetItem(row.rsi)
                     if is_number(row.rsi):
                         if 0 < float(row.rsi) <= 30:
-                            item.setTextColor(QtGui.QColor('green'))
+                            item.setForeground(QtGui.QColor('green'))
                         elif 30 < float(row.rsi) < 70:
-                            item.setTextColor(QtGui.QColor('orange'))
+                            item.setForeground(QtGui.QColor('orange'))
                         elif float(row.rsi) > 70:
-                            item.setTextColor(QtGui.QColor('red'))
+                            item.setForeground(QtGui.QColor('red'))
                 elif self.gui.header_names[col_index] == '52 Wk Hi-Low':
-                    item = QtGui.QTableWidgetItem(row.fifty_two)
+                    item = QtWidgets.QTableWidgetItem(row.fifty_two)
                 elif self.gui.header_names[col_index] == 'Earnings Date':
-                    item = QtGui.QTableWidgetItem(row.earnings_date)
+                    item = QtWidgets.QTableWidgetItem(row.earnings_date)
                     if row.earnings_soon:
                         font = QtGui.QFont()
                         font.setBold(True)
                         font.setPointSize(14)
                         item.setFont(font)
                 else:
-                    item = QtGui.QTableWidgetItem('No Data Found')
+                    item = QtWidgets.QTableWidgetItem('No Data Found')
                 self.gui.results_table.setItem(row_index, col_index, item)
 
 
@@ -147,14 +154,14 @@ def is_number(num):
 
 
 def main():
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     mainWindow = MyForm()
     status = app.exec_()
     sys.exit(status)
 
 
 def test_harness():
-    return QtGui.QApplication(sys.argv)
+    return QtWidgets.QApplication(sys.argv)
 
 if __name__ == "__main__":
     main()

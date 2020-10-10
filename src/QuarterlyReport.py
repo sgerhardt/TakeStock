@@ -20,8 +20,8 @@ def get_share_price(ticker=''):
     :return: String containing the earnings date
     """
     try:
-        earnings_url = 'http://www.nasdaq.com/symbol/' + ticker.lower()
-        request = requests.get(earnings_url)
+        earnings_url = 'https://www.nasdaq.com/symbol/' + ticker.lower()
+        request = requests.get(earnings_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find('div', class_="qwidget-dollar").text
     except:
@@ -36,8 +36,8 @@ def get_earnings_date(ticker=''):
     :return: String containing the earnings date
     """
     try:
-        earnings_url = 'http://www.nasdaq.com/earnings/report/' + ticker.lower()
-        request = requests.get(earnings_url)
+        earnings_url = 'https://www.nasdaq.com/earnings/report/' + ticker.lower()
+        request = requests.get(earnings_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         tag = soup.find(text=re.compile('Earnings announcement*'))
         return tag[tag.index(':') + 1:].strip()
@@ -48,13 +48,13 @@ def get_earnings_date(ticker=''):
 def get_fifty_two_week_high_low(ticker=''):
     """
     This function gets the fifty-two week high and lows for the given ticker symbol. It performs a request to the
-    http://www.barchart.com/ url and parses the response to find the fifty-two week high and low.
+    https://www.barchart.com/ url and parses the response to find the fifty-two week high and low.
     :param ticker: The stock symbol/ticker to use for the lookup
     :return: String containing the fifty two week high and low
     """
     try:
-        earnings_url = 'http://www.barchart.com/quotes/stocks/' + ticker.upper()
-        request = requests.get(earnings_url)
+        earnings_url = 'https://www.barchart.com/quotes/stocks/' + ticker.upper()
+        request = requests.get(earnings_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         found_value = soup.find(text=re.compile('52Wk'))
         high_text = found_value.findPrevious('td').text.strip()
@@ -72,8 +72,8 @@ def get_trailing_pe_ratio(ticker=''):
     :return: String containing the trailing PE ratio
     """
     try:
-        key_stats_url = 'http://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
-        request = requests.get(key_stats_url)
+        key_stats_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+        request = requests.get(key_stats_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find(text=re.compile('Trailing P/E')).findNext('td').text
     except:
@@ -88,8 +88,8 @@ def get_peg_ratio(ticker=''):
     :return: String containing the PEG ratio
     """
     try:
-        key_stats_url = 'http://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
-        request = requests.get(key_stats_url)
+        key_stats_url = 'https://finance.yahoo.com/q/ks?s=' + ticker.lower() + '+Key+Statistics'
+        request = requests.get(key_stats_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find(text=re.compile('PEG Ratio')).findNext('td').text
     except:
@@ -104,16 +104,17 @@ def get_rsi(ticker=''):
     :return: String containing the rsi
     """
     try:
-        rsi_url = 'http://charting.nasdaq.com/ext/charts.dll?2-1-14-0-0-512-03NA000000' + ticker.upper() \
+        rsi_url = 'https://charting.nasdaq.com/ext/charts.dll?2-1-14-0-0-512-03NA000000' + ticker.upper() \
                   + '-&SF:1|27-SH:27=10-BG=FFFFFF-BT=0-WD=635-HT=395--XTBL-'
-        request = requests.get(rsi_url)
+        request = requests.get(rsi_url, timeout=5)
         soup = bs4.BeautifulSoup(request.text, 'html.parser')
         return soup.find_all('td', class_="DrillDownData")[1].text
     except:
         return 'No Data Found'
 
+
 # def get_past_consensus_performance(ticker=''):
-#TODO finish implementation
+# TODO finish implementation
 #     """
 #     This function gets the past performance versus analyst consensus for the given ticker symbol.
 #     It performs a request to the nasdaq url and parses the response to get the data
@@ -121,8 +122,8 @@ def get_rsi(ticker=''):
 #     :return: String containing the performance against consensus for past
 #     """
 #     try:
-#         earnings_url = 'http://www.nasdaq.com/symbol/' + ticker.lower() + '/earnings-surprise'
-#         request = requests.get(earnings_url)
+#         earnings_url = 'https://www.nasdaq.com/symbol/' + ticker.lower() + '/earnings-surprise'
+#         request = requests.get(earnings_url)git
 #         soup = bs4.BeautifulSoup(request.text, 'html.parser')
 #         # tag = soup.find(text=re.compile(''))
 #         # return tag[tag.index(':') + 1:].strip()

@@ -1,8 +1,8 @@
 import unittest
 import time
 
-from PyQt4.QtTest import QTest
-from PyQt4.QtCore import Qt
+from PyQt5.QtTest import QTest
+from PyQt5.QtCore import Qt
 
 from src.TakeStock import *
 
