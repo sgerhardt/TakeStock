@@ -5,7 +5,6 @@ sudo: required
 
 python:
   # using major version aliases
-  - "3.3"
   - "3.4"
   - "3.5"
 
