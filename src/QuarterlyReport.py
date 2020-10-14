@@ -167,11 +167,11 @@ class Stock:
         self.earnings_soon = False
         if self.earnings_date:
             if self.earnings_date != 'No Data Found':
+                dayStart = self.earnings_date[self.earnings_date.index('/') + 1:]
+                day = dayStart[:dayStart.index('/')]
                 earnings_date = datetime.date(year=int(self.earnings_date[len(self.earnings_date) - 2:]),
-                                              month=int(self.earnings_date[0:2]),
-                                              day=int(self.earnings_date[
-                                                      self.earnings_date.index('/') - 2:self.earnings_date.index(
-                                                          '/')].strip()))
+                                              month=int(self.earnings_date[0:2].replace('/', '')),
+                                              day=int(day))
                 if 0 <= abs((earnings_date - datetime.date.today()).days) <= 7:
                     self.earnings_soon = True
 
